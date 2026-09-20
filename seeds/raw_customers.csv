@@ -1,0 +1,41 @@
+customer_id,customer_unique_id,customer_zip_code_prefix,customer_city,customer_state
+cust_0000,uniq_0000,18032,sao paulo,PR
+cust_0001,uniq_0001,79655,belo horizonte,ES
+cust_0002,uniq_0002,68910,vitoria,RJ
+cust_0003,uniq_0003,49498,rio de janeiro,RS
+cust_0004,uniq_0004,48970,sao paulo,BA
+cust_0005,uniq_0005,87272,belo horizonte,BA
+cust_0006,uniq_0006,17735,rio de janeiro,SP
+cust_0007,uniq_0007,72762,belo horizonte,MG
+cust_0008,uniq_0008,28132,vitoria,RS
+cust_0009,uniq_0009,18475,belo horizonte,RS
+cust_0010,uniq_0010,57382,belo horizonte,ES
+cust_0011,uniq_0011,97805,sao paulo,RS
+cust_0012,uniq_0012,76216,rio de janeiro,RS
+cust_0013,uniq_0013,78501,rio de janeiro,MG
+cust_0014,uniq_0014,74572,rio de janeiro,PR
+cust_0015,uniq_0015,80745,sao paulo,MG
+cust_0016,uniq_0016,56189,vitoria,RJ
+cust_0017,uniq_0017,21530,sao paulo,BA
+cust_0018,uniq_0018,85576,vitoria,BA
+cust_0019,uniq_0019,50534,vitoria,SP
+cust_0020,uniq_0020,55031,belo horizonte,RS
+cust_0021,uniq_0021,43371,vitoria,RJ
+cust_0022,uniq_0022,26429,rio de janeiro,RS
+cust_0023,uniq_0023,93407,belo horizonte,SP
+cust_0024,uniq_0024,80340,rio de janeiro,RS
+cust_0025,uniq_0025,67947,rio de janeiro,RS
+cust_0026,uniq_0026,46216,belo horizonte,RS
+cust_0027,uniq_0027,84047,rio de janeiro,BA
+cust_0028,uniq_0028,59088,sao paulo,ES
+cust_0029,uniq_0029,49906,rio de janeiro,BA
+cust_0030,uniq_0030,50540,belo horizonte,RJ
+cust_0031,uniq_0031,30451,sao paulo,RS
+cust_0032,uniq_0032,18292,rio de janeiro,ES
+cust_0033,uniq_0033,59912,sao paulo,ES
+cust_0034,uniq_0034,89909,vitoria,ES
+cust_0035,uniq_0035,15743,rio de janeiro,ES
+cust_0036,uniq_0036,87245,rio de janeiro,SP
+cust_0037,uniq_0037,84485,sao paulo,SP
+cust_0038,uniq_0038,34908,vitoria,RJ
+cust_0039,uniq_0039,66849,vitoria,SP

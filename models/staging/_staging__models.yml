@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: stg_olist__customers
+    description: Um cliente por linha, colunas renomeadas para o padrão do projeto.
+    columns:
+      - name: customer_id
+        description: Chave natural do cliente para este pedido específico (a Olist gera um customer_id por pedido).
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: Identificador estável do cliente ao longo de múltiplos pedidos.
+        tests:
+          - not_null
+
+  - name: stg_olist__sellers
+    description: Um vendedor por linha.
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_olist__products
+    description: Catálogo de produtos, já com a categoria traduzida para inglês.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: category
+        tests:
+          - not_null
+
+  - name: stg_olist__orders
+    description: Um pedido por linha, com timestamps convertidos.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+
+  - name: stg_olist__order_items
+    description: Um item de pedido por linha.
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__products')
+                field: product_id
+      - name: seller_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__sellers')
+                field: seller_id
+      - name: price
+        tests:
+          - not_null
+
+  - name: stg_olist__payments
+    description: Um pagamento por linha (um pedido pode ter mais de um).
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: payment_value
+        tests:
+          - not_null
+
+  - name: stg_olist__reviews
+    description: Uma avaliação por pedido.
+    columns:
+      - name: review_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+      - name: review_score
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]

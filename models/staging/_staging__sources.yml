@@ -1,0 +1,19 @@
+version: 2
+
+seeds:
+  - name: raw_customers
+    description: Clientes do marketplace (amostra sintética; schema igual ao dataset real da Olist).
+  - name: raw_sellers
+    description: Vendedores do marketplace.
+  - name: raw_products
+    description: Catálogo de produtos.
+  - name: raw_category_translation
+    description: Tradução de categoria de produto (PT -> EN).
+  - name: raw_orders
+    description: Pedidos, com datas de compra/aprovação/entrega.
+  - name: raw_order_items
+    description: Itens de cada pedido (grão de item).
+  - name: raw_payments
+    description: Pagamentos de cada pedido.
+  - name: raw_reviews
+    description: Avaliação de cada pedido.

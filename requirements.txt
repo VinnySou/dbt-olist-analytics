@@ -1,0 +1,4 @@
+dbt-core>=1.12
+dbt-duckdb>=1.11
+pandas>=2.2
+numpy>=1.26

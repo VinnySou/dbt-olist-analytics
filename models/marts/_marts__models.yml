@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: Uma linha por customer_id (chave por pedido, ver customer_unique_id para o cliente real ao longo do tempo). Dimensão direta da staging, sem lógica adicional.
+    columns:
+      - name: customer_id
+        description: Chave primária da dimensão.
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: Identificador estável do cliente ao longo de múltiplos pedidos.
+        tests:
+          - not_null
+
+  - name: dim_sellers
+    description: Uma linha por vendedor. Dimensão direta da staging, sem lógica adicional.
+    columns:
+      - name: seller_id
+        description: Chave primária da dimensão.
+        tests:
+          - unique
+          - not_null

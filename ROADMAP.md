@@ -10,7 +10,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] Scaffold do projeto (dbt_project.yml, profiles.yml, requirements.txt)
 - [x] Seeds sintéticos (scripts/generate_seed_data.py) + schema/tests da raw
 - [x] Camada de staging completa (stg_olist__*, um por seed) + testes genéricos
-- [ ] `dim_customers`, `dim_sellers` (models/marts) — dimensões simples, direto da staging
+- [x] `dim_customers`, `dim_sellers` (models/marts) — dimensões simples, direto da staging
 - [ ] `dim_products` — junta categoria já traduzida, adiciona `product_size_category` (pequeno/médio/grande por volume) como exemplo de lógica de negócio num mart
 - [ ] `dim_date` — calendário gerado com `dbt_utils.date_spine` (adicionar o pacote `dbt-labs/dbt_utils` em `packages.yml`)
 - [ ] `fct_order_items` (grão: item do pedido) — liga a `dim_products`/`dim_sellers`, preço e frete

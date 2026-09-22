@@ -22,3 +22,24 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: dim_products
+    description: Uma linha por produto, com a categoria já traduzida (herdada da staging) e uma classificação de porte calculada a partir do volume da embalagem.
+    columns:
+      - name: product_id
+        description: Chave primária da dimensão.
+        tests:
+          - unique
+          - not_null
+      - name: category
+        description: Categoria do produto traduzida para inglês (fallback para o nome original ou 'unknown').
+        tests:
+          - not_null
+      - name: product_volume_cm3
+        description: Volume da embalagem em cm³ (comprimento × altura × largura). Nulo quando alguma dimensão está ausente na origem.
+      - name: product_size_category
+        description: Porte do produto por volume da embalagem - 'pequeno' (< 30.000 cm³), 'medio' (< 100.000 cm³), 'grande' (>= 100.000 cm³) ou 'unknown' quando o volume não pôde ser calculado.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['pequeno', 'medio', 'grande', 'unknown']

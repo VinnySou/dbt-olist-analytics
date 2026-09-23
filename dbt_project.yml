@@ -28,3 +28,7 @@ seeds:
   olist_analytics:
     +schema: raw
     +quote_columns: false
+
+vars:
+  dim_date_start_date: '2024-01-01'
+  dim_date_end_date: '2024-12-31'

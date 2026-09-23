@@ -15,4 +15,5 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python scripts/generate_seed_data.py
+      - run: DBT_PROFILES_DIR=. dbt deps
       - run: DBT_PROFILES_DIR=. dbt build

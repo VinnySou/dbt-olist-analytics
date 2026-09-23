@@ -43,3 +43,33 @@ models:
           - accepted_values:
               arguments:
                 values: ['pequeno', 'medio', 'grande', 'unknown']
+
+  - name: dim_date
+    description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
+    columns:
+      - name: date_day
+        description: Chave primária da dimensão (data, grão diário).
+        tests:
+          - unique
+          - not_null
+      - name: date_key
+        description: Data no formato inteiro YYYYMMDD, útil como chave substituta em fatos.
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: Ano da data.
+      - name: quarter
+        description: Trimestre do ano (1 a 4).
+      - name: month
+        description: Mês do ano (1 a 12).
+      - name: day_of_month
+        description: Dia do mês (1 a 31).
+      - name: day_of_week
+        description: Dia da semana (0 = domingo a 6 = sábado, convenção do DuckDB `extract(dow from ...)`).
+      - name: day_name
+        description: Nome do dia da semana por extenso.
+      - name: month_name
+        description: Nome do mês por extenso.
+      - name: is_weekend
+        description: Booleano indicando se a data cai em sábado ou domingo.

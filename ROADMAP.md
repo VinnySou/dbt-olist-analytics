@@ -13,7 +13,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] `dim_customers`, `dim_sellers` (models/marts) — dimensões simples, direto da staging
 - [x] `dim_products` — junta categoria já traduzida, adiciona `product_size_category` (pequeno/médio/grande por volume) como exemplo de lógica de negócio num mart
 - [x] `dim_date` — calendário gerado com `dbt_utils.date_spine` (adicionar o pacote `dbt-labs/dbt_utils` em `packages.yml`)
-- [ ] `fct_order_items` (grão: item do pedido) — liga a `dim_products`/`dim_sellers`, preço e frete
+- [x] `fct_order_items` (grão: item do pedido) — liga a `dim_products`/`dim_sellers`, preço e frete
 - [ ] `fct_orders` (grão: pedido) — agrega pagamento e nota, calcula tempo de entrega e atraso vs. estimativa
 - [ ] Testes de negócio (`tests/` singulares): nenhum valor de pedido negativo, nenhuma entrega com data anterior à compra, soma de `fct_order_items` por pedido bate com `fct_orders`
 - [ ] `analyses/` com as perguntas de negócio (receita mensal, curva ABC de categoria, taxa de atraso por estado) — mesma ideia do `sql-server-vendas-analytics`, mas em dbt

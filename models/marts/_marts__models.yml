@@ -44,6 +44,60 @@ models:
               arguments:
                 values: ['pequeno', 'medio', 'grande', 'unknown']
 
+  - name: fct_order_items
+    description: Uma linha por item de pedido (grão de `stg_olist__order_items`). Liga produto, vendedor e a data de compra do pedido às métricas de preço e frete do item.
+    columns:
+      - name: order_id
+        description: Pedido ao qual o item pertence.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: order_item_id
+        description: Número sequencial do item dentro do pedido (junto com order_id, forma a chave primária do grão).
+        tests:
+          - not_null
+      - name: product_id
+        description: Produto vendido neste item.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: seller_id
+        description: Vendedor responsável por este item.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: order_purchase_date_key
+        description: Data de compra do pedido no formato YYYYMMDD, FK para `dim_date.date_key`.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: price
+        description: Preço do item, sem frete.
+        tests:
+          - not_null
+      - name: freight_value
+        description: Valor do frete alocado a este item.
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_id
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

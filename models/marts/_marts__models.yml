@@ -98,6 +98,60 @@ models:
               - order_id
               - order_item_id
 
+  - name: fct_orders
+    description: Uma linha por pedido (grão de `stg_olist__orders`). Agrega pagamentos (soma de `payment_value`, maior `payment_installments`) e nota de review (média de `review_score`), e calcula tempo de entrega e atraso vs. estimativa para pedidos com status `delivered`.
+    columns:
+      - name: order_id
+        description: Chave primária do fato.
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Cliente que fez o pedido.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_status
+        description: Status do pedido (delivered, shipped, canceled).
+        tests:
+          - not_null
+      - name: order_purchase_date_key
+        description: Data de compra do pedido no formato YYYYMMDD, FK para `dim_date.date_key`.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: payment_value
+        description: Soma de `payment_value` entre todas as parcelas/métodos de pagamento do pedido (`stg_olist__payments`).
+        tests:
+          - not_null
+      - name: payment_installments
+        description: Maior número de parcelas entre os pagamentos do pedido.
+      - name: payment_type
+        description: Método de pagamento primário do pedido (menor `payment_sequential` em `stg_olist__payments`).
+      - name: review_score
+        description: Média de `review_score` entre as avaliações do pedido (`stg_olist__reviews`).
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+              config:
+                where: "review_score is not null"
+      - name: delivery_time_days
+        description: Dias entre `purchased_at` e `delivered_at`. Nulo para pedidos que não estão com status `delivered`.
+      - name: delivery_delay_days
+        description: Dias de atraso vs. estimativa (`delivered_at` - `estimated_delivery_at`); positivo é atraso, negativo é entrega antecipada. Nulo para pedidos que não estão com status `delivered`.
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "payment_value >= 0"
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

@@ -93,6 +93,12 @@ def generate() -> None:
             })
     order_items = pd.DataFrame(order_items_rows)
 
+    order_totals = (
+        order_items.assign(item_total=order_items["price"] + order_items["freight_value"])
+        .groupby("order_id")["item_total"]
+        .sum()
+    )
+
     payments_rows = []
     for order_id in orders["order_id"]:
         payments_rows.append({
@@ -100,7 +106,7 @@ def generate() -> None:
             "payment_sequential": 1,
             "payment_type": RNG.choice(PAYMENT_TYPES),
             "payment_installments": int(RNG.integers(1, 10)),
-            "payment_value": round(float(RNG.uniform(30, 900)), 2),
+            "payment_value": round(float(order_totals[order_id]), 2),
         })
     payments = pd.DataFrame(payments_rows)
 

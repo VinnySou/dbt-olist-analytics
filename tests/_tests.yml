@@ -1,0 +1,18 @@
+version: 2
+
+data_tests:
+  - name: assert_no_negative_order_values
+    description: >
+      Nenhum pedido pode ter payment_value, price ou freight_value negativo.
+      Falha se algum valor monetário nos marts de pedido for menor que zero.
+
+  - name: assert_delivery_after_purchase
+    description: >
+      Nenhum pedido entregue pode ter delivered_at anterior a purchased_at.
+      Falha se a data de entrega for cronologicamente anterior à compra.
+
+  - name: assert_order_items_total_matches_payment
+    description: >
+      A soma de (price + freight_value) dos itens de um pedido, agregada por
+      order_id, deve bater com o payment_value de fct_orders (tolerância de
+      1 centavo). Falha se houver divergência acima da tolerância.

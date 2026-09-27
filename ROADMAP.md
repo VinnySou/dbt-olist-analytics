@@ -16,7 +16,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] `fct_order_items` (grão: item do pedido) — liga a `dim_products`/`dim_sellers`, preço e frete
 - [x] `fct_orders` (grão: pedido) — agrega pagamento e nota, calcula tempo de entrega e atraso vs. estimativa
 - [x] Testes de negócio (`tests/` singulares): nenhum valor de pedido negativo, nenhuma entrega com data anterior à compra, soma de `fct_order_items` por pedido bate com `fct_orders`
-- [ ] `analyses/` com as perguntas de negócio (receita mensal, curva ABC de categoria, taxa de atraso por estado) — mesma ideia do `sql-server-vendas-analytics`, mas em dbt
+- [x] `analyses/` com as perguntas de negócio (receita mensal, curva ABC de categoria, taxa de atraso por estado) — mesma ideia do `sql-server-vendas-analytics`, mas em dbt
 - [ ] GitHub Actions: workflow rodando `dbt seed` + `dbt build` a cada push
 - [ ] `dbt docs generate` + publicar os docs estáticos (GitHub Pages ou só documentar como gerar localmente)
 - [ ] Exemplo de model incremental (`fct_order_items` como `materialized='incremental'`, com `is_incremental()`)

@@ -28,7 +28,7 @@ models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (em construção)
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
-analyses/                consultas de negócio versionadas (em construção)
+analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)
 ```
 
 ## Como executar

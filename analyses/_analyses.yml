@@ -1,0 +1,11 @@
+version: 2
+
+analyses:
+  - name: monthly_revenue
+    description: Receita mensal (soma de `payment_value`) de pedidos entregues, com a variação percentual em relação ao mês anterior.
+
+  - name: abc_curve_by_category
+    description: Curva ABC de categoria de produto por receita (`price + freight_value`) - classe A soma até 80% da receita acumulada, B até 95%, C o restante.
+
+  - name: delivery_delay_rate_by_state
+    description: Taxa de pedidos entregues com atraso (`delivery_delay_days > 0`) por estado do cliente, e o atraso médio em dias.

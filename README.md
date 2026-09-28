@@ -1,5 +1,7 @@
 # Olist Analytics — dbt
 
+[![dbt-build](https://github.com/VinnySou/dbt-olist-analytics/actions/workflows/dbt-build.yml/badge.svg)](https://github.com/VinnySou/dbt-olist-analytics/actions/workflows/dbt-build.yml)
+
 Transformação de dados em SQL declarativo com [dbt](https://www.getdbt.com/), sobre
 o mesmo dataset (Olist, e-commerce brasileiro) do projeto
 [`olist-etl-powerbi`](https://github.com/VinnySou/olist-etl-powerbi) — só que aqui a

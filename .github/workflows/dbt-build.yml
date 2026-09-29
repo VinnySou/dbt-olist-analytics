@@ -48,6 +48,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # continue-on-error: enquanto o Pages não for habilitado manualmente em
+      # Settings > Pages > Source: "GitHub Actions", este step falha com 404
+      # ("Ensure GitHub Pages has been enabled") - não deixa o workflow todo
+      # vermelho por causa de um toggle que só um admin do repo pode ligar.
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4

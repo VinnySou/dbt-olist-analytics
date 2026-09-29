@@ -60,7 +60,9 @@ Os docs também são publicados automaticamente a cada push em `main` (workflow
 **https://vinnysou.github.io/dbt-olist-analytics/**
 
 (requer habilitar GitHub Pages uma vez em Settings → Pages → Source:
-"GitHub Actions" — depois disso o deploy é automático via CI.)
+"GitHub Actions" — depois disso o deploy é automático via CI. Até lá, o job
+`publish-docs` falha com 404 mas não derruba o workflow, já que o step de
+deploy tem `continue-on-error`.)
 
 ## Stack
 

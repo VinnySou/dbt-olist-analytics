@@ -18,7 +18,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] Testes de negócio (`tests/` singulares): nenhum valor de pedido negativo, nenhuma entrega com data anterior à compra, soma de `fct_order_items` por pedido bate com `fct_orders`
 - [x] `analyses/` com as perguntas de negócio (receita mensal, curva ABC de categoria, taxa de atraso por estado) — mesma ideia do `sql-server-vendas-analytics`, mas em dbt
 - [x] GitHub Actions: workflow rodando `dbt build` a cada push (já cobre `seed`, já que `dbt build` resolve seeds/models/tests na mesma DAG)
-- [ ] `dbt docs generate` + publicar os docs estáticos (GitHub Pages ou só documentar como gerar localmente)
+- [x] `dbt docs generate` + publicar os docs estáticos (GitHub Pages ou só documentar como gerar localmente)
 - [ ] Exemplo de model incremental (`fct_order_items` como `materialized='incremental'`, com `is_incremental()`)
 - [ ] Exemplo de snapshot (SCD tipo 2) — ex.: histórico de mudança de `order_status`
 - [ ] README final: diagrama de lineage (dbt gera automaticamente), seção "por que dbt em vez de só SQL cru", comparação com o `olist-etl-powerbi` (mesma origem de dados, abordagem diferente: Python imperativo vs. SQL declarativo)

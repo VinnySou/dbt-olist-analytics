@@ -55,6 +55,13 @@ DBT_PROFILES_DIR=. dbt docs generate
 DBT_PROFILES_DIR=. dbt docs serve
 ```
 
+Os docs também são publicados automaticamente a cada push em `main` (workflow
+`dbt-build`, job `publish-docs`), em:
+**https://vinnysou.github.io/dbt-olist-analytics/**
+
+(requer habilitar GitHub Pages uma vez em Settings → Pages → Source:
+"GitHub Actions" — depois disso o deploy é automático via CI.)
+
 ## Stack
 
 dbt-core · DuckDB · Python (geração dos seeds sintéticos)

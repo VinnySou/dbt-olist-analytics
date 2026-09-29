@@ -29,3 +29,25 @@ jobs:
           key: dbt-packages-${{ hashFiles('packages.yml') }}
       - run: DBT_PROFILES_DIR=. dbt deps
       - run: DBT_PROFILES_DIR=. dbt build
+      - name: Generate dbt docs
+        run: DBT_PROFILES_DIR=. dbt docs generate
+      - name: Upload docs artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target
+
+  publish-docs:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

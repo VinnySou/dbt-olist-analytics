@@ -1,6 +1,7 @@
 # Olist Analytics — dbt
 
 [![dbt-build](https://github.com/VinnySou/dbt-olist-analytics/actions/workflows/dbt-build.yml/badge.svg)](https://github.com/VinnySou/dbt-olist-analytics/actions/workflows/dbt-build.yml)
+📖 [Documentação e lineage gerados pelo dbt](https://vinnysou.github.io/dbt-olist-analytics/)
 
 Transformação de dados em SQL declarativo com [dbt](https://www.getdbt.com/), sobre
 o mesmo dataset (Olist, e-commerce brasileiro) do projeto
@@ -11,6 +12,25 @@ dbt.
 
 **Este projeto está em construção incremental — ver [`ROADMAP.md`](ROADMAP.md)
 para o que já foi feito e o que vem a seguir.**
+
+### O que este projeto demonstra
+
+- **Modelagem dimensional**: camada de staging (7 views, uma por fonte) →
+  marts em esquema estrela (`dim_customers`, `dim_sellers`, `dim_products`,
+  `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
+  documentada em cada model (ex.: classificação de porte de produto, cálculo
+  de atraso de entrega vs. estimativa).
+- **Qualidade de dados como código**: 65 testes automatizados (genéricos —
+  `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
+  com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
+  cada push.
+- **CI/CD**: GitHub Actions builda o projeto inteiro (`seed` + `run` + `test`)
+  a cada push/PR e publica a documentação técnica automaticamente.
+- **Dados sintéticos reprodutíveis**: gerador Python que recria o schema real
+  da Olist sem depender de um dump de dados de produção.
+- **Análises de negócio versionadas**: receita mensal, curva ABC de
+  categoria e taxa de atraso por estado, como consultas SQL auditáveis em
+  `analyses/`.
 
 ## Por que dbt (e quando não usar)
 
@@ -27,7 +47,7 @@ os dois lados dessa decisão.
 ```
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
-models/marts/           dimensões e fatos prontos para consumo (em construção)
+models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)
@@ -59,11 +79,6 @@ Os docs também são publicados automaticamente a cada push em `main` (workflow
 `dbt-build`, job `publish-docs`), em:
 **https://vinnysou.github.io/dbt-olist-analytics/**
 
-(requer habilitar GitHub Pages uma vez em Settings → Pages → Source:
-"GitHub Actions" — depois disso o deploy é automático via CI. Até lá, o job
-`publish-docs` falha com 404 mas não derruba o workflow, já que o step de
-deploy tem `continue-on-error`.)
-
 ## Stack
 
 dbt-core · DuckDB · Python (geração dos seeds sintéticos)
@@ -72,11 +87,18 @@ dbt-core · DuckDB · Python (geração dos seeds sintéticos)
 
 ## English
 
+📖 [Generated docs and lineage graph](https://vinnysou.github.io/dbt-olist-analytics/)
+
 SQL-based transformation with dbt, over the same Olist e-commerce dataset used in
 [`olist-etl-powerbi`](https://github.com/VinnySou/olist-etl-powerbi) — a deliberate
 contrast: that project is an imperative Python ETL pipeline, this one is declarative
 SQL models with dbt's built-in testing and documentation. Work in progress, see
 [`ROADMAP.md`](ROADMAP.md) for current status.
+
+**What this demonstrates:** dimensional modeling (staging views → star-schema
+marts), 65 automated data-quality tests (generic + business rules), CI/CD via
+GitHub Actions (build + docs publishing on every push), reproducible synthetic
+data generation, and versioned business analyses (SQL) alongside the models.
 
 ```bash
 pip install -r requirements.txt

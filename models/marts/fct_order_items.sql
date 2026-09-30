@@ -1,3 +1,11 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key=['order_id', 'order_item_id'],
+        incremental_strategy='delete+insert',
+    )
+}}
+
 with order_items as (
     select * from {{ ref('stg_olist__order_items') }}
 ),
@@ -21,3 +29,7 @@ joined as (
 )
 
 select * from joined
+
+{% if is_incremental() %}
+where order_purchase_date_key >= (select max(order_purchase_date_key) from {{ this }})
+{% endif %}

@@ -45,7 +45,13 @@ models:
                 values: ['pequeno', 'medio', 'grande', 'unknown']
 
   - name: fct_order_items
-    description: Uma linha por item de pedido (grão de `stg_olist__order_items`). Liga produto, vendedor e a data de compra do pedido às métricas de preço e frete do item.
+    description: >
+      Uma linha por item de pedido (grão de `stg_olist__order_items`). Liga produto, vendedor e a data de
+      compra do pedido às métricas de preço e frete do item. Materializado como `incremental`
+      (`delete+insert`, chave `order_id` + `order_item_id`): em runs incrementais, só reprocessa itens cujo
+      `order_purchase_date_key` seja maior ou igual ao máximo já carregado, cobrindo pedidos novos e
+      relançando o último dia carregado (para itens que chegaram atrasados). Rodar com `--full-refresh` para
+      reconstruir do zero.
     columns:
       - name: order_id
         description: Pedido ao qual o item pertence.

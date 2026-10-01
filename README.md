@@ -48,6 +48,7 @@ os dois lados dessa decisão.
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+snapshots/               histórico SCD tipo 2 (ex.: mudança de order_status)
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)

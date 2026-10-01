@@ -1,0 +1,26 @@
+version: 2
+
+snapshots:
+  - name: snp_orders_status
+    description: >
+      Histórico SCD tipo 2 de `raw_orders`, usando a estratégia `check` sobre
+      `order_status` e `order_delivered_customer_date`. Cada `dbt snapshot` que
+      encontrar uma mudança nessas colunas fecha a linha vigente (preenche
+      `dbt_valid_to`) e insere uma nova linha vigente — preservando o estado
+      anterior em vez de sobrescrever, ao contrário do que uma staging/mart
+      normal (sempre recalculada do zero) faria.
+    columns:
+      - name: order_id
+        description: Chave natural do pedido (unique_key do snapshot).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido no momento em que esta versão da linha era vigente.
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual esta versão da linha passou a ser vigente.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de ser vigente (nulo = versão atual).

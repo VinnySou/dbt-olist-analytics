@@ -16,3 +16,9 @@ data_tests:
       A soma de (price + freight_value) dos itens de um pedido, agregada por
       order_id, deve bater com o payment_value de fct_orders (tolerância de
       1 centavo). Falha se houver divergência acima da tolerância.
+
+  - name: assert_one_current_version_per_order_status
+    description: >
+      Em snap_orders_status (snapshot SCD tipo 2), cada order_id deve ter
+      exatamente uma versão vigente (dbt_valid_to nulo). Falha se algum pedido
+      tiver zero ou mais de uma versão vigente.

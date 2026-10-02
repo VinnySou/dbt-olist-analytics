@@ -1,0 +1,28 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico (SCD tipo 2) de `order_status` por pedido, snapshotando `raw_orders`
+      direto (antes de qualquer transformação da staging). Estratégia `check` em
+      `order_status`: cada vez que o status de um pedido muda entre execuções do
+      snapshot, a linha anterior é fechada (`dbt_valid_to` preenchido) e uma nova
+      linha é inserida com o status atual (`dbt_valid_to` nulo = versão vigente).
+    columns:
+      - name: order_id
+        description: Pedido ao qual esta versão do histórico se refere.
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido nesta versão do histórico.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual esta versão passou a valer.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de valer. Nulo = versão vigente do pedido.

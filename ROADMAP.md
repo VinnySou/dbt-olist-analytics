@@ -20,5 +20,5 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] GitHub Actions: workflow rodando `dbt build` a cada push (já cobre `seed`, já que `dbt build` resolve seeds/models/tests na mesma DAG)
 - [x] `dbt docs generate` + publicar os docs estáticos (GitHub Pages ou só documentar como gerar localmente)
 - [x] Exemplo de model incremental (`fct_order_items` como `materialized='incremental'`, com `is_incremental()`)
-- [ ] Exemplo de snapshot (SCD tipo 2) — ex.: histórico de mudança de `order_status`
+- [x] Exemplo de snapshot (SCD tipo 2) — ex.: histórico de mudança de `order_status`
 - [ ] README final: diagrama de lineage (dbt gera automaticamente), seção "por que dbt em vez de só SQL cru", comparação com o `olist-etl-powerbi` (mesma origem de dados, abordagem diferente: Python imperativo vs. SQL declarativo)

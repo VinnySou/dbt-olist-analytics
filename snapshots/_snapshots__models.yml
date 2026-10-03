@@ -1,0 +1,39 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico de mudanças de `order_status` por pedido (SCD tipo 2, estratégia `check` sobre a
+      coluna `order_status`). Cada `dbt snapshot` compara o estado atual de `raw_orders` com a última
+      versão registrada: se o status mudou, fecha a linha anterior (`dbt_valid_to` = horário do run) e
+      insere uma nova linha aberta (`dbt_valid_to` nulo). Como os seeds deste projeto são sintéticos e
+      estáticos (gerados uma vez com seed fixo do RNG), rodar `dbt snapshot` repetidas vezes sobre o
+      mesmo `raw_orders` não produz novas versões — isso é o comportamento correto da estratégia
+      `check`, não um bug. Para ver o histórico sendo de fato construído, edite `order_status` em
+      `seeds/raw_orders.csv` (ou gere um novo lote com `scripts/generate_seed_data.py` e um seed
+      diferente) entre dois `dbt snapshot`.
+    columns:
+      - name: order_id
+        description: Pedido ao qual esta versão do status pertence.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: order_status
+        description: Status do pedido nesta versão (delivered, shipped ou canceled).
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp do run de `dbt snapshot` em que esta versão passou a ser válida.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp do run em que esta versão deixou de ser válida. Nulo para a versão atual (mais recente) de cada pedido.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - dbt_valid_from

@@ -1,0 +1,22 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico (SCD tipo 2) de `order_status` por pedido, direto de `raw_orders`.
+      Usa estratégia `check` em vez de `timestamp` porque o dataset da Olist não
+      traz uma coluna `updated_at` no pedido — cada `dbt snapshot` compara o valor
+      atual de `order_status` com a última versão registrada e abre uma nova linha
+      quando ele muda (ex.: `shipped` -> `delivered`), fechando `dbt_valid_to` da
+      linha anterior.
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        tests:
+          - not_null
+      - name: dbt_scd_id
+        tests:
+          - unique
+          - not_null

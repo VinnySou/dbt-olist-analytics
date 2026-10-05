@@ -1,0 +1,31 @@
+version: 2
+
+snapshots:
+  - name: snapshot_olist__orders_status
+    description: >
+      Histórico de mudanças de order_status (SCD tipo 2, strategy='check' na
+      coluna order_status). Cada vez que `dbt snapshot` roda e encontra um
+      order_id com order_status diferente do último valor registrado, a linha
+      antiga é fechada (dbt_valid_to preenchido) e uma nova linha é inserida
+      com dbt_valid_from = dbt_updated_at da execução. Fonte: stg_olist__orders
+      (pass-through simples da staging, sem filtros, então é seguro snapshotar
+      direto dela em vez do source bruto).
+    columns:
+      - name: order_id
+        description: Chave natural do pedido. Junto com dbt_valid_from forma a chave da linha histórica.
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+      - name: dbt_scd_id
+        description: Chave surrogate gerada pelo dbt para cada versão histórica da linha.
+        tests:
+          - unique
+          - not_null
+      - name: dbt_valid_from
+        tests:
+          - not_null

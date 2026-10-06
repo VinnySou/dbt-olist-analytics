@@ -1,0 +1,27 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      SCD tipo 2 de order_status por pedido: cada mudança de status gera uma
+      nova linha, preservando as versões anteriores com dbt_valid_from/dbt_valid_to.
+      Estratégia `check` sobre a coluna order_status (raw_orders não tem um
+      campo de updated_at confiável pra usar estratégia de timestamp).
+    columns:
+      - name: order_id
+        description: Chave natural do pedido (não é única na tabela do snapshot — uma linha por versão de status).
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+      - name: dbt_valid_from
+        tests:
+          - not_null
+      - name: dbt_scd_id
+        tests:
+          - unique
+          - not_null

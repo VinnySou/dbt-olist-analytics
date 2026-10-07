@@ -1,0 +1,32 @@
+version: 2
+
+snapshots:
+  - name: snp_orders_status
+    description: >
+      Histórico de mudança de `order_status` (SCD tipo 2) a partir de
+      `stg_olist__orders`. Strategy `check` sobre a coluna `order_status`:
+      cada vez que o status de um pedido muda entre execuções de
+      `dbt snapshot`, a linha vigente é fechada (`dbt_valid_to` preenchido) e
+      uma nova linha é inserida com o status atual e `dbt_valid_to` nulo.
+      Permite responder "qual era o status do pedido X em determinado
+      momento", o que `fct_orders` (só o status atual) não cobre.
+    columns:
+      - name: order_id
+        description: Pedido rastreado (chave natural, repete uma linha por versão de status).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido na versão (delivered, shipped, canceled).
+        tests:
+          - not_null
+      - name: dbt_scd_id
+        description: Chave primária da linha de histórico (hash da unique_key + os valores monitorados).
+        tests:
+          - unique
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual esta versão passou a ser a vigente.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de ser vigente. Nulo para a versão atual do pedido.

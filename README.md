@@ -48,6 +48,7 @@ os dois lados dessa decisão.
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+snapshots/              histórico (SCD tipo 2) de order_status via dbt snapshot
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)
@@ -65,8 +66,9 @@ python scripts/generate_seed_data.py
 DBT_PROFILES_DIR=. dbt build
 ```
 
-Roda tudo (`seed` + `run` + `test`) sobre um DuckDB local (`dev.duckdb`, ignorado
-pelo git) — não precisa de nenhuma conta de warehouse na nuvem pra testar.
+Roda tudo (`seed` + `run` + `snapshot` + `test`) sobre um DuckDB local
+(`dev.duckdb`, ignorado pelo git) — não precisa de nenhuma conta de warehouse
+na nuvem pra testar.
 
 Para ver o grafo de dependências e a documentação gerada:
 

@@ -1,0 +1,31 @@
+version: 2
+
+snapshots:
+  - name: orders_status_snapshot
+    description: >
+      Histórico (SCD tipo 2) de `order_status` por pedido, a partir de `raw_orders`. Estratégia `check` em
+      `order_status` (a origem sintética não tem uma coluna de `updated_at` confiável): cada `dbt snapshot`
+      insere uma nova linha quando o status mudou desde a última execução e fecha a linha anterior
+      (`dbt_valid_to`), preservando as versões passadas em vez de sobrescrevê-las como a staging/marts fazem.
+    columns:
+      - name: order_id
+        description: Pedido rastreado (junto com `dbt_valid_from`, forma a chave do grão do snapshot).
+        tests:
+          - not_null
+      - name: customer_id
+        description: Cliente que fez o pedido, carregado junto para contexto (não faz parte da estratégia `check`).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido no momento desta versão (delivered, shipped, canceled). Coluna monitorada pela estratégia `check`.
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp da execução do `dbt snapshot` em que esta versão passou a valer.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp da execução em que esta versão deixou de valer (substituída por uma mudança de status). Nulo para a versão vigente de cada pedido.
+    tests:
+      - unique:
+          column_name: "order_id || '-' || coalesce(cast(dbt_valid_from as varchar), '')"

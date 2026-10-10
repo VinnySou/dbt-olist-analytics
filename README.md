@@ -20,10 +20,13 @@ para o que já foi feito e o que vem a seguir.**
   `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
   documentada em cada model (ex.: classificação de porte de produto, cálculo
   de atraso de entrega vs. estimativa).
-- **Qualidade de dados como código**: 65 testes automatizados (genéricos —
+- **Qualidade de dados como código**: 71 testes automatizados (genéricos —
   `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
   com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
   cada push.
+- **Histórico de mudanças (SCD tipo 2)**: snapshot (`snap_orders_status`) que
+  versiona o `order_status` de cada pedido ao longo do tempo via estratégia
+  `check` do dbt, preservando o valor anterior em vez de sobrescrevê-lo.
 - **CI/CD**: GitHub Actions builda o projeto inteiro (`seed` + `run` + `test`)
   a cada push/PR e publica a documentação técnica automaticamente.
 - **Dados sintéticos reprodutíveis**: gerador Python que recria o schema real

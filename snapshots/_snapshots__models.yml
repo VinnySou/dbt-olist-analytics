@@ -1,0 +1,24 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico (SCD tipo 2) de `order_status` por pedido, via strategy='check'
+      sobre `stg_olist__orders`. Cada mudança de status fecha a versão anterior
+      (`dbt_valid_to` preenchido) e abre uma nova (`dbt_valid_from`); a versão
+      vigente de cada pedido é a que tem `dbt_valid_to is null`.
+    columns:
+      - name: order_id
+        description: Pedido ao qual a versão de status pertence. Não é chave única da tabela (um pedido tem uma linha por versão de status).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido na versão capturada (ex. 'shipped', 'delivered', 'canceled').
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp em que essa versão passou a ser a vigente.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que essa versão deixou de ser vigente. Nulo enquanto a versão é a atual.

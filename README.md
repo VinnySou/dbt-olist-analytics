@@ -28,6 +28,9 @@ para o que já foi feito e o que vem a seguir.**
   a cada push/PR e publica a documentação técnica automaticamente.
 - **Dados sintéticos reprodutíveis**: gerador Python que recria o schema real
   da Olist sem depender de um dump de dados de produção.
+- **Histórico de mudanças (SCD tipo 2)**: snapshot (`snp_olist__order_status`)
+  rastreando mudanças de `order_status` por pedido via `dbt snapshot`, com
+  `dbt_valid_from`/`dbt_valid_to` controlando a versão vigente de cada pedido.
 - **Análises de negócio versionadas**: receita mensal, curva ABC de
   categoria e taxa de atraso por estado, como consultas SQL auditáveis em
   `analyses/`.
@@ -48,6 +51,7 @@ os dois lados dessa decisão.
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+snapshots/               histórico de mudanças (SCD tipo 2) de order_status
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)

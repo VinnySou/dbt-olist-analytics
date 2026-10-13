@@ -1,0 +1,30 @@
+snapshots:
+  - name: snap_orders_status
+    relation: ref('stg_olist__orders')
+    description: >
+      Histórico tipo 2 (SCD2) de `order_status` por pedido. Estratégia `check` sobre `order_status`:
+      cada vez que o status de um pedido muda entre execuções do `dbt snapshot`, a linha vigente é
+      fechada (`dbt_valid_to` preenchido) e uma nova linha é aberta com o status atual
+      (`dbt_valid_to` nulo). Serve de exemplo de SCD2 em dbt; numa fonte real isso seria alimentado
+      por uma tabela que de fato muda `order_status` ao longo do tempo.
+    config:
+      schema: snapshots
+      unique_key: order_id
+      strategy: check
+      check_cols:
+        - order_status
+    columns:
+      - name: order_id
+        description: Pedido rastreado. Junto com `dbt_valid_from`, identifica unicamente uma versão da linha.
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido no momento da versão (coluna monitorada pela estratégia `check`).
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp em que esta versão do status passou a valer.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de valer. Nulo para a versão vigente (status atual).

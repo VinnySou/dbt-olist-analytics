@@ -1,0 +1,34 @@
+version: 2
+
+snapshots:
+  - name: snapshot_orders_status
+    description: >
+      Histórico de mudança de `order_status` por pedido (SCD tipo 2, estratégia `check`
+      sobre `order_status`). Cada vez que `dbt snapshot` (ou `dbt build`) roda e encontra
+      um `order_id` já existente com `order_status` diferente do último registro aberto,
+      fecha a linha atual (`dbt_valid_to` = horário do run) e insere uma nova linha com
+      `dbt_valid_from` = horário do run. Como os seeds são estáticos entre regenerações,
+      o histórico só cresce quando `raw_orders` muda de fato entre dois runs de snapshot.
+    columns:
+      - name: order_id
+        description: Chave natural do pedido (unique_key do snapshot).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido no momento deste registro.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual este registro passou a ser o estado vigente do pedido.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que este registro deixou de ser vigente (nulo enquanto for o estado atual).
+      - name: dbt_scd_id
+        description: Chave surrogate gerada pelo dbt para esta versão específica do registro.
+        tests:
+          - unique
+          - not_null

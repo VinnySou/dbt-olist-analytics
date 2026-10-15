@@ -1,0 +1,32 @@
+version: 2
+
+snapshots:
+  - name: snapshot_orders_status
+    description: >
+      Histórico de mudança de `order_status` por pedido (SCD tipo 2). Usa estratégia
+      `check` (em vez de `timestamp`) porque `raw_orders` não tem uma coluna genérica
+      de "última atualização" - só timestamps específicos de cada etapa (aprovação,
+      entrega). A cada `dbt snapshot`/`dbt build`, uma linha nova é inserida e a
+      anterior é fechada (`dbt_valid_to` preenchido) sempre que `order_status` mudar
+      para o mesmo `order_id`.
+    columns:
+      - name: order_id
+        description: Pedido rastreado (chave de negócio da snapshot, repete uma linha por versão de status).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido na versão registrada por esta linha.
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual esta versão do status passou a valer.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de valer (null = versão atual do pedido).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - dbt_valid_from

@@ -1,0 +1,24 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico de status do pedido (SCD tipo 2, estratégia 'check' sobre
+      order_status). Uma linha por versão de status de cada pedido;
+      dbt_valid_from/dbt_valid_to marcam o período de validade.
+    columns:
+      - name: order_id
+        description: Chave natural do pedido (não é a unique_key da tabela de snapshot, que é dbt_scd_id).
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - not_null
+      - name: dbt_scd_id
+        description: Chave surrogate gerada pelo dbt, única por versão de linha.
+        tests:
+          - unique
+          - not_null
+      - name: dbt_valid_from
+        tests:
+          - not_null

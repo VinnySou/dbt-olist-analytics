@@ -20,10 +20,13 @@ para o que já foi feito e o que vem a seguir.**
   `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
   documentada em cada model (ex.: classificação de porte de produto, cálculo
   de atraso de entrega vs. estimativa).
-- **Qualidade de dados como código**: 65 testes automatizados (genéricos —
+- **Qualidade de dados como código**: 70 testes automatizados (genéricos —
   `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
   com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
   cada push.
+- **Histórico de mudanças (SCD tipo 2)**: snapshot (`snapshots/snap_orders_status.sql`)
+  guarda uma versão por mudança de `order_status`, com estratégia `check`
+  (o dataset não tem uma coluna `updated_at` para usar `timestamp`).
 - **CI/CD**: GitHub Actions builda o projeto inteiro (`seed` + `run` + `test`)
   a cada push/PR e publica a documentação técnica automaticamente.
 - **Dados sintéticos reprodutíveis**: gerador Python que recria o schema real
@@ -48,10 +51,28 @@ os dois lados dessa decisão.
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+snapshots/               histórico de mudanças (SCD tipo 2) sobre order_status
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)
 ```
+
+### Testando o snapshot (SCD tipo 2)
+
+O `dbt build` já roda o snapshot junto (ele resolve a DAG inteira). Pra ver o
+histórico sendo criado de fato, é preciso que o valor de `order_status` mude
+*na tabela* entre duas execuções — não basta editar o CSV, tem que recarregar
+o seed:
+
+```bash
+# edite seeds/raw_orders.csv, mudando o status de um pedido
+DBT_PROFILES_DIR=. dbt seed --select raw_orders
+DBT_PROFILES_DIR=. dbt snapshot
+```
+
+A tabela `snapshots.snap_orders_status` passa a ter duas linhas para esse
+`order_id`: a versão antiga com `dbt_valid_to` preenchido, e a nova com
+`dbt_valid_to` nulo.
 
 ## Como executar
 
@@ -96,7 +117,8 @@ SQL models with dbt's built-in testing and documentation. Work in progress, see
 [`ROADMAP.md`](ROADMAP.md) for current status.
 
 **What this demonstrates:** dimensional modeling (staging views → star-schema
-marts), 65 automated data-quality tests (generic + business rules), CI/CD via
+marts), 70 automated data-quality tests (generic + business rules), a type-2
+slowly-changing-dimension snapshot tracking `order_status` history, CI/CD via
 GitHub Actions (build + docs publishing on every push), reproducible synthetic
 data generation, and versioned business analyses (SQL) alongside the models.
 

@@ -1,0 +1,35 @@
+version: 2
+
+snapshots:
+  - name: snap_orders_status
+    description: >
+      Histórico de `order_status` por pedido (SCD tipo 2, estratégia `check` sobre
+      `order_status`), direto de `raw_orders`. Os seeds sintéticos não mudam entre
+      runs, então hoje cada pedido tem só uma versão (`dbt_valid_to` nulo) — o
+      exemplo documenta o mecanismo de snapshot; uma mudança real de status
+      (ex.: `shipped` -> `delivered`) apareceria como uma segunda linha na
+      próxima vez que `dbt snapshot` rodasse sobre um `raw_orders` atualizado.
+    columns:
+      - name: order_id
+        description: Pedido rastreado (junto com dbt_valid_from, forma a chave do snapshot).
+        tests:
+          - not_null
+      - name: order_status
+        description: Status do pedido na versão rastreada por esta linha.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+      - name: dbt_valid_from
+        description: Timestamp a partir do qual esta versão do pedido passou a ser válida.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão deixou de ser válida (nulo = versão atual).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - dbt_valid_from

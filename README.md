@@ -20,10 +20,14 @@ para o que já foi feito e o que vem a seguir.**
   `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
   documentada em cada model (ex.: classificação de porte de produto, cálculo
   de atraso de entrega vs. estimativa).
-- **Qualidade de dados como código**: 65 testes automatizados (genéricos —
+- **Qualidade de dados como código**: 70 testes automatizados (genéricos —
   `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
   com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
   cada push.
+- **Histórico de mudanças (SCD tipo 2)**: `snapshots/snap_orders_status.sql`
+  rastreia mudanças de `order_status` por pedido via `dbt snapshot` (estratégia
+  `check`), como exemplo do mecanismo — ver nota em
+  `snapshots/_snapshots.yml` sobre a limitação dos dados sintéticos estáticos.
 - **CI/CD**: GitHub Actions builda o projeto inteiro (`seed` + `run` + `test`)
   a cada push/PR e publica a documentação técnica automaticamente.
 - **Dados sintéticos reprodutíveis**: gerador Python que recria o schema real
@@ -48,6 +52,7 @@ os dois lados dessa decisão.
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+snapshots/              histórico de mudanças (SCD tipo 2) via `dbt snapshot`
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)

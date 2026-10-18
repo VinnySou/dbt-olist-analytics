@@ -1,0 +1,27 @@
+version: 2
+
+snapshots:
+  - name: snapshot_orders_status
+    description: >
+      Histórico tipo 2 (SCD2) de `raw_orders`, por `order_id`. Usa estratégia `check` nas colunas
+      `order_status`, `order_approved_at` e `order_delivered_customer_date`: cada vez que `dbt snapshot`
+      roda e alguma dessas colunas muda de valor para um pedido, a linha antiga é fechada
+      (`dbt_valid_to` preenchido) e uma nova linha é aberta (`dbt_valid_from` = run atual, `dbt_valid_to`
+      nulo). Permite reconstruir em que status um pedido estava em qualquer ponto no tempo, mesmo depois
+      que ele avançar (ex.: de `shipped` para `delivered`) nos seeds.
+    columns:
+      - name: order_id
+        description: Pedido rastreado. Junto com `dbt_valid_from`, identifica uma versão única do pedido.
+        tests:
+          - not_null
+      - name: dbt_valid_from
+        description: Timestamp (do run do snapshot) a partir do qual esta versão da linha passou a valer.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp em que esta versão foi substituída por uma mais nova. Nulo = versão vigente.
+      - name: dbt_scd_id
+        description: Chave surrogate única de cada versão (hash de `order_id` + colunas rastreadas + timestamp).
+        tests:
+          - unique
+          - not_null

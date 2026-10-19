@@ -37,15 +37,104 @@ para o que já foi feito e o que vem a seguir.**
   categoria e taxa de atraso por estado, como consultas SQL auditáveis em
   `analyses/`.
 
-## Por que dbt (e quando não usar)
+## Lineage
+
+Gerado automaticamente a partir dos próprios models (`ref()`), não mantido à mão.
+A versão interativa (com todas as colunas e testes) está nos
+[docs publicados](https://vinnysou.github.io/dbt-olist-analytics/#!/overview);
+esta é uma versão estática só com os nós principais, pra quem está lendo o
+README sem clicar em nada:
+
+```mermaid
+graph LR
+    subgraph raw[seeds]
+        raw_customers[raw_customers]
+        raw_orders[raw_orders]
+        raw_order_items[raw_order_items]
+        raw_products[raw_products]
+        raw_sellers[raw_sellers]
+        raw_payments[raw_payments]
+        raw_reviews[raw_reviews]
+    end
+
+    subgraph staging[models/staging]
+        stg_customers[stg_olist__customers]
+        stg_orders[stg_olist__orders]
+        stg_order_items[stg_olist__order_items]
+        stg_products[stg_olist__products]
+        stg_sellers[stg_olist__sellers]
+        stg_payments[stg_olist__payments]
+        stg_reviews[stg_olist__reviews]
+    end
+
+    subgraph marts[models/marts]
+        dim_customers[dim_customers]
+        dim_products[dim_products]
+        dim_sellers[dim_sellers]
+        dim_date["dim_date (date_spine, sem fonte)"]
+        fct_order_items[fct_order_items]
+        fct_orders[fct_orders]
+    end
+
+    snap_orders["snapshot_orders_status (SCD2)"]
+
+    raw_customers --> stg_customers --> dim_customers
+    raw_products --> stg_products --> dim_products
+    raw_sellers --> stg_sellers --> dim_sellers
+    raw_orders --> stg_orders
+    raw_order_items --> stg_order_items
+    raw_payments --> stg_payments
+    raw_reviews --> stg_reviews
+
+    stg_orders --> fct_order_items
+    stg_order_items --> fct_order_items
+
+    stg_orders --> fct_orders
+    stg_payments --> fct_orders
+    stg_reviews --> fct_orders
+
+    raw_orders --> snap_orders
+```
+
+## Por que dbt em vez de SQL cru (e quando não usar)
 
 dbt brilha quando a transformação é toda dentro de um banco/warehouse (SQL puro,
 com `ref()` resolvendo a ordem de execução, testes declarativos e documentação
 gerada automaticamente a partir do próprio código). Não é a ferramenta certa
 quando a transformação depende de lógica que SQL não expressa bem (chamadas de
 API, modelos de ML, arquivos binários) — aí um pipeline Python como o
-`olist-etl-powerbi` continua fazendo mais sentido. Os dois projetos juntos mostram
-os dois lados dessa decisão.
+`olist-etl-powerbi` continua fazendo mais sentido.
+
+Na prática, sem dbt o equivalente deste projeto seria uma pasta de scripts
+`.sql` soltos, rodados numa ordem que só quem escreveu lembra, sem garantia de
+que mudar um script não quebra os que leem a tabela que ele gera, e sem testes
+além dos que alguém lembrar de rodar manualmente. Três coisas que dbt dá de
+graça e um script cru não dá:
+
+- **Ordem de execução automática**: `ref()` entre models monta o grafo acima
+  a partir do próprio SQL — não existe um `run_all.sh` numerado à mão que
+  alguém esquece de atualizar quando um model novo entra no meio.
+- **Teste como parte do pipeline**: os 69 testes (`not_null`, `unique`,
+  `relationships` e os de negócio em `tests/`) rodam dentro do mesmo
+  `dbt build` que materializa os models — um dado inconsistente falha o CI
+  antes de chegar a um mart, não é descoberto depois, olhando o dashboard.
+- **Documentação que não fica desatualizada**: `dbt docs generate` lê as
+  descrições em `schema.yml` e o grafo de `ref()` direto do código; não tem
+  como o diagrama acima divergir do SQL real, porque ele é gerado a partir
+  dele.
+
+### Comparando com o `olist-etl-powerbi`
+
+Os dois projetos partem do mesmo dataset (Olist) pra mostrar abordagens
+diferentes de transformação de dados:
+
+| | `dbt-olist-analytics` (este) | [`olist-etl-powerbi`](https://github.com/VinnySou/olist-etl-powerbi) |
+|---|---|---|
+| Transformação | SQL declarativo (`models/`, `ref()` resolve a ordem) | Python imperativo (pipeline ETL explícito) |
+| Onde roda | Dentro do warehouse (DuckDB local neste repo) | Fora do warehouse, em memória no processo Python |
+| Qualidade de dados | Testes declarativos em YAML (`dbt build` falha o CI) | Validação feita em código Python no próprio pipeline |
+| Consumo final | DuckDB + docs/lineage gerados pelo dbt | Dashboard Power BI |
+| Quando escolher | Transformação cabe em SQL e se beneficia de testes/docs versionados | Lógica não expressa bem em SQL (ex.: chamadas externas, formatos binários) ou o destino já é uma ferramenta de BI específica |
 
 ## Estrutura
 

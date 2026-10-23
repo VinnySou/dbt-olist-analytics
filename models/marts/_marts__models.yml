@@ -158,6 +158,49 @@ models:
           arguments:
             expression: "payment_value >= 0"
 
+  - name: fct_monthly_revenue
+    description: >
+      Uma linha por mês (grão `year`/`month`), agregando `fct_orders` para pedidos `delivered` via
+      `dim_date`. Centraliza o group by mensal que `analyses/monthly_revenue.sql` fazia na mão, pra
+      qualquer consumidor (BI, outra analysis) reusar o mesmo número de receita mensal.
+    columns:
+      - name: month_key
+        description: Chave substituta do mês no formato YYYYMM (`year * 100 + month`), ex. 202403.
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: Ano do mês, extraído de `dim_date.year`.
+        tests:
+          - not_null
+      - name: month
+        description: Mês do ano (1 a 12), extraído de `dim_date.month`.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: delivered_orders
+        description: Quantidade de pedidos com status `delivered` cuja data de compra cai no mês.
+        tests:
+          - not_null
+      - name: revenue
+        description: Soma de `fct_orders.payment_value` dos pedidos `delivered` do mês.
+        tests:
+          - not_null
+      - name: avg_order_value
+        description: Média de `fct_orders.payment_value` dos pedidos `delivered` do mês.
+      - name: avg_review_score
+        description: Média de `fct_orders.review_score` dos pedidos `delivered` do mês (nulo quando nenhum pedido do mês tem review).
+      - name: prior_month_revenue
+        description: Receita (`revenue`) do mês anterior na série, via `lag()`. Nulo no primeiro mês da série.
+      - name: revenue_change_pct
+        description: Variação percentual de `revenue` vs. `prior_month_revenue`. Nulo no primeiro mês da série.
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "revenue >= 0"
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

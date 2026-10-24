@@ -158,6 +158,61 @@ models:
           arguments:
             expression: "payment_value >= 0"
 
+  - name: fct_monthly_revenue
+    description: >
+      Uma linha por mês (grão: `year` + `month`), agregando `fct_orders` via `dim_date` para pedidos com
+      status `delivered`. Centraliza o group by mensal usado em `analyses/monthly_revenue` e em qualquer
+      outro consumidor que precise do número sem repetir a lógica.
+    columns:
+      - name: year
+        description: Ano do mês agregado.
+        tests:
+          - not_null
+      - name: month
+        description: Mês do ano (1 a 12).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: month_start_date
+        description: Primeiro dia do mês (chave de ordenação/junção), derivado de `dim_date.date_day`.
+        tests:
+          - unique
+          - not_null
+      - name: revenue
+        description: Soma de `fct_orders.payment_value` entre os pedidos entregues no mês.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: delivered_orders
+        description: Quantidade de pedidos entregues no mês.
+        tests:
+          - not_null
+      - name: avg_review_score
+        description: Média de `fct_orders.review_score` entre os pedidos entregues no mês.
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 5
+              config:
+                where: "avg_review_score is not null"
+      - name: avg_delivery_time_days
+        description: Média de `fct_orders.delivery_time_days` entre os pedidos entregues no mês.
+      - name: prior_month_revenue
+        description: "`revenue` do mês anterior (`lag` por `month_start_date`). Nulo no primeiro mês da série."
+      - name: revenue_change_pct
+        description: Variação percentual de `revenue` vs. `prior_month_revenue`. Nulo no primeiro mês da série.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - year
+              - month
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

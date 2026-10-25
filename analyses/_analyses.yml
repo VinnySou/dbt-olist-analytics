@@ -2,7 +2,7 @@ version: 2
 
 analyses:
   - name: monthly_revenue
-    description: Receita mensal (soma de `payment_value`) de pedidos entregues, com a variação percentual em relação ao mês anterior.
+    description: Receita mensal (soma de `payment_value`) de pedidos entregues, com a variação percentual em relação ao mês anterior. Só expõe `fct_monthly_revenue`, que carrega a agregação.
 
   - name: abc_curve_by_category
     description: Curva ABC de categoria de produto por receita (`price + freight_value`) - classe A soma até 80% da receita acumulada, B até 95%, C o restante.

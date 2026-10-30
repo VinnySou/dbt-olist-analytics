@@ -200,3 +200,50 @@ models:
         description: Nome do mês por extenso.
       - name: is_weekend
         description: Booleano indicando se a data cai em sábado ou domingo.
+
+  - name: fct_monthly_revenue
+    description: >
+      Uma linha por mês (ano + mês), agregando `fct_orders` via `dim_date` para pedidos com status
+      `delivered`. Centraliza o group by de receita mensal usado em `analyses/monthly_revenue.sql` e em
+      qualquer outra análise que precise do número por mês.
+    columns:
+      - name: year
+        description: Ano do mês agregado.
+        tests:
+          - not_null
+      - name: month
+        description: Mês do ano (1 a 12).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: month_start_date
+        description: Primeiro dia do mês (de `dim_date.date_day`), útil para ordenar/plotar a série temporal.
+        tests:
+          - not_null
+      - name: revenue
+        description: Soma de `payment_value` dos pedidos `delivered` no mês.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: delivered_orders
+        description: Quantidade de pedidos `delivered` no mês.
+        tests:
+          - not_null
+      - name: avg_order_value
+        description: "`revenue` dividido por `delivered_orders`, arredondado em 2 casas."
+      - name: avg_review_score
+        description: Média de `review_score` (de `fct_orders`) entre os pedidos `delivered` do mês.
+      - name: prior_month_revenue
+        description: Receita do mês anterior na série (`lag` por `year, month`), nulo no primeiro mês.
+      - name: revenue_change_pct
+        description: Variação percentual de `revenue` vs. `prior_month_revenue`, nula no primeiro mês ou quando o mês anterior tem receita zero.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - year
+              - month

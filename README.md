@@ -17,10 +17,11 @@ para o que já foi feito e o que vem a seguir.**
 
 - **Modelagem dimensional**: camada de staging (7 views, uma por fonte) →
   marts em esquema estrela (`dim_customers`, `dim_sellers`, `dim_products`,
-  `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
-  documentada em cada model (ex.: classificação de porte de produto, cálculo
-  de atraso de entrega vs. estimativa).
-- **Qualidade de dados como código**: 69 testes automatizados (genéricos —
+  `dim_date`, `fct_order_items`, `fct_orders`, `fct_monthly_revenue`), com
+  lógica de negócio documentada em cada model (ex.: classificação de porte
+  de produto, cálculo de atraso de entrega vs. estimativa, receita mensal
+  agregada uma única vez e reaproveitada pelas análises).
+- **Qualidade de dados como código**: 80 testes automatizados (genéricos —
   `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
   com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
   cada push.
@@ -74,6 +75,7 @@ graph LR
         dim_date["dim_date (date_spine, sem fonte)"]
         fct_order_items[fct_order_items]
         fct_orders[fct_orders]
+        fct_monthly_revenue[fct_monthly_revenue]
     end
 
     snap_orders["snapshot_orders_status (SCD2)"]
@@ -92,6 +94,9 @@ graph LR
     stg_orders --> fct_orders
     stg_payments --> fct_orders
     stg_reviews --> fct_orders
+
+    fct_orders --> fct_monthly_revenue
+    dim_date --> fct_monthly_revenue
 
     raw_orders --> snap_orders
 ```
@@ -190,7 +195,7 @@ SQL models with dbt's built-in testing and documentation. Work in progress, see
 [`ROADMAP.md`](ROADMAP.md) for current status.
 
 **What this demonstrates:** dimensional modeling (staging views → star-schema
-marts), 65 automated data-quality tests (generic + business rules), CI/CD via
+marts), 80 automated data-quality tests (generic + business rules), CI/CD via
 GitHub Actions (build + docs publishing on every push), reproducible synthetic
 data generation, and versioned business analyses (SQL) alongside the models.
 

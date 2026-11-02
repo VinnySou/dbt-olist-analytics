@@ -158,6 +158,46 @@ models:
           arguments:
             expression: "payment_value >= 0"
 
+  - name: fct_monthly_revenue
+    description: >
+      Uma linha por mês (ano + mês), agregando `fct_orders` via `dim_date` para pedidos com status
+      `delivered`. Evita repetir o group by de `analyses/monthly_revenue.sql` em qualquer lugar que
+      precise do número de receita mensal.
+    columns:
+      - name: year
+        description: Ano do mês agregado.
+        tests:
+          - not_null
+      - name: month
+        description: Mês do ano (1 a 12).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: year_month_key
+        description: Chave substituta do mês no formato YYYYMM (`year * 100 + month`), útil para ordenar/juntar sem depender de duas colunas.
+        tests:
+          - unique
+          - not_null
+      - name: revenue
+        description: Soma de `payment_value` (`fct_orders`) entre os pedidos `delivered` do mês.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: delivered_orders
+        description: Quantidade de pedidos `delivered` no mês.
+        tests:
+          - not_null
+      - name: avg_order_value
+        description: Receita média por pedido no mês (`revenue / delivered_orders`).
+      - name: prior_month_revenue
+        description: Receita do mês anterior (`lag(revenue)` ordenado por ano/mês). Nulo no primeiro mês da série.
+      - name: revenue_change_pct
+        description: Variação percentual da receita vs. o mês anterior, arredondada a 1 casa decimal. Nulo no primeiro mês da série ou quando o mês anterior teve receita zero.
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

@@ -1,22 +1,6 @@
--- Receita mensal (soma de payment_value) para pedidos entregues, com variação % vs. mês anterior.
-with orders as (
-    select * from {{ ref('fct_orders') }}
-),
-
-dates as (
-    select * from {{ ref('dim_date') }}
-),
-
-monthly as (
-    select
-        dates.year,
-        dates.month,
-        sum(orders.payment_value) as revenue,
-        count(*) as delivered_orders
-    from orders
-    inner join dates on orders.order_purchase_date_key = dates.date_key
-    where orders.order_status = 'delivered'
-    group by 1, 2
+-- Receita mensal (via fct_monthly_revenue) para pedidos entregues, com variação % vs. mês anterior.
+with monthly as (
+    select * from {{ ref('fct_monthly_revenue') }}
 )
 
 select

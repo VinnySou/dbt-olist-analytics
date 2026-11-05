@@ -158,6 +158,45 @@ models:
           arguments:
             expression: "payment_value >= 0"
 
+  - name: fct_monthly_revenue
+    description: >
+      Uma linha por mês (grão: ano + mês), agregando `fct_orders` via `dim_date` para pedidos com status
+      `delivered`. Existe pra centralizar a receita mensal num único lugar em vez de repetir o group by em
+      cada análise/relatório que precisar do número (ex.: `analyses/monthly_revenue.sql`, que agora só
+      consulta este mart).
+    columns:
+      - name: month_key
+        description: Chave primária do mart, no formato inteiro YYYYMM (ano * 100 + mês).
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: Ano do mês agregado.
+        tests:
+          - not_null
+      - name: month
+        description: Mês do ano (1 a 12).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: revenue
+        description: Soma de `payment_value` dos pedidos `delivered` cujo `order_purchase_date_key` cai no mês.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: delivered_orders
+        description: Quantidade de pedidos `delivered` no mês.
+        tests:
+          - not_null
+      - name: prior_month_revenue
+        description: "`revenue` do mês anterior na série (via `lag`). Nulo no primeiro mês da série."
+      - name: revenue_change_pct
+        description: "Variação percentual de `revenue` vs. `prior_month_revenue`, arredondada a 1 casa decimal. Nulo no primeiro mês da série."
+
   - name: dim_date
     description: Calendário gerado com `dbt_utils.date_spine`, uma linha por dia entre `var('dim_date_start_date')` e `var('dim_date_end_date')` (definidos em `dbt_project.yml`, cobrindo o período dos pedidos sintéticos com folga).
     columns:

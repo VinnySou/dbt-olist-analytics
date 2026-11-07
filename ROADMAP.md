@@ -24,5 +24,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] README final: diagrama de lineage (dbt gera automaticamente), seção "por que dbt em vez de só SQL cru", comparação com o `olist-etl-powerbi` (mesma origem de dados, abordagem diferente: Python imperativo vs. SQL declarativo)
 - [x] `dim_date` sem teste de unicidade/relationship: adicionar `unique`/`not_null` em `date_key` e cobrir os campos derivados (ano, mês, trimestre) com `accepted_values` onde fizer sentido
 - [x] Mart de granularidade mensal (`fct_monthly_revenue` ou semelhante) agregando `fct_orders` por `dim_date`, pra não repetir o group by das `analyses/` em todo lugar que precisar do número
-- [ ] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [x] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [ ] `source_status`/freshness real: hoje os seeds não têm coluna de timestamp de carga, então não dá pra usar `dbt_utils.recency` de verdade — avaliar adicionar uma coluna `_loaded_at` sintética nos seeds se isso fizer sentido pro propósito didático do projeto
+- [ ] Macro de teste genérico reutilizável para a regra de "soma de detalhe bate com o total" (hoje `assert_order_items_total_matches_payment` e `assert_monthly_revenue_matches_orders` repetem a mesma lógica de tolerância de 1 centavo)
 

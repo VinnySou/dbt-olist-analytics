@@ -3,17 +3,50 @@ version: 2
 seeds:
   - name: raw_customers
     description: Clientes do marketplace (amostra sintética; schema igual ao dataset real da Olist).
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 40
   - name: raw_sellers
     description: Vendedores do marketplace.
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 10
   - name: raw_products
     description: Catálogo de produtos.
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 20
   - name: raw_category_translation
     description: Tradução de categoria de produto (PT -> EN).
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 5
   - name: raw_orders
     description: Pedidos, com datas de compra/aprovação/entrega.
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 60
   - name: raw_order_items
     description: Itens de cada pedido (grão de item).
+    data_tests:
+      - min_row_count:
+          arguments:
+            # cada pedido tem pelo menos 1 item, então o piso real é o número de pedidos
+            min_rows: 60
   - name: raw_payments
     description: Pagamentos de cada pedido.
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 60
   - name: raw_reviews
     description: Avaliação de cada pedido.
+    data_tests:
+      - min_row_count:
+          arguments:
+            min_rows: 60

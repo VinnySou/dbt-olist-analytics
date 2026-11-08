@@ -3,17 +3,51 @@ version: 2
 seeds:
   - name: raw_customers
     description: Clientes do marketplace (amostra sintética; schema igual ao dataset real da Olist).
+    tests:
+      - min_row_count:
+          arguments:
+            value: 40
   - name: raw_sellers
     description: Vendedores do marketplace.
+    tests:
+      - min_row_count:
+          arguments:
+            value: 10
   - name: raw_products
     description: Catálogo de produtos.
+    tests:
+      - min_row_count:
+          arguments:
+            value: 20
   - name: raw_category_translation
     description: Tradução de categoria de produto (PT -> EN).
+    tests:
+      - min_row_count:
+          arguments:
+            value: 5
   - name: raw_orders
     description: Pedidos, com datas de compra/aprovação/entrega.
+    tests:
+      - min_row_count:
+          arguments:
+            value: 60
   - name: raw_order_items
     description: Itens de cada pedido (grão de item).
+    tests:
+      # cada pedido gera 1 ou 2 itens (ver scripts/generate_seed_data.py), então
+      # o piso é o número de pedidos, não um valor fixo igual ao de raw_orders.
+      - min_row_count:
+          arguments:
+            value: 60
   - name: raw_payments
     description: Pagamentos de cada pedido.
+    tests:
+      - min_row_count:
+          arguments:
+            value: 60
   - name: raw_reviews
     description: Avaliação de cada pedido.
+    tests:
+      - min_row_count:
+          arguments:
+            value: 60

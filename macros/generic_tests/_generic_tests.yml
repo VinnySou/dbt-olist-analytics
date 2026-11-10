@@ -1,0 +1,11 @@
+version: 2
+
+tests:
+  - name: min_row_count
+    description: >
+      Garante que a tabela (ou seed) tenha pelo menos `min_count` linhas.
+      Pensado para os seeds sintéticos: pega regressão caso
+      scripts/generate_seed_data.py mude e passe a gerar muito menos linhas
+      do que o esperado, sem precisar de um volume exato (que mudaria a cada
+      execução do gerador, já que as quantidades são fixas no script, mas o
+      conteúdo é aleatório).

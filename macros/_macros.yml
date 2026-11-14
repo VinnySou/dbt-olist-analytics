@@ -1,0 +1,17 @@
+version: 2
+
+macros:
+  - name: test_minimum_row_count
+    description: >
+      Generic test aplicado aos seeds (ver models/staging/_staging__sources.yml):
+      falha se a tabela tiver menos linhas que `min_rows`. Não é uma contagem
+      exata — é uma rede de segurança pra pegar regressão de volume caso
+      scripts/generate_seed_data.py mude e passe a gerar poucas linhas (ou
+      nenhuma) sem ninguém notar antes de chegar nos marts.
+    arguments:
+      - name: model
+        type: relation
+        description: Modelo/seed sendo testado (injetado automaticamente pelo dbt).
+      - name: min_rows
+        type: int
+        description: Quantidade mínima de linhas esperada na tabela.

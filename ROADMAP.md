@@ -24,5 +24,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] README final: diagrama de lineage (dbt gera automaticamente), seção "por que dbt em vez de só SQL cru", comparação com o `olist-etl-powerbi` (mesma origem de dados, abordagem diferente: Python imperativo vs. SQL declarativo)
 - [x] `dim_date` sem teste de unicidade/relationship: adicionar `unique`/`not_null` em `date_key` e cobrir os campos derivados (ano, mês, trimestre) com `accepted_values` onde fizer sentido
 - [x] Mart de granularidade mensal (`fct_monthly_revenue` ou semelhante) agregando `fct_orders` por `dim_date`, pra não repetir o group by das `analyses/` em todo lugar que precisar do número
-- [ ] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [x] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [ ] Exemplo de model efêmero (`+materialized: ephemeral`) na staging, pra mostrar quando vale a pena não persistir o CTE como view/tabela
+- [ ] Macro de negócio reaproveitável (ex.: `is_late_delivery(delivered_at, estimated_at)`) pra não repetir a mesma expressão de atraso em `fct_orders` e em futuras análises
 

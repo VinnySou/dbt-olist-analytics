@@ -24,5 +24,7 @@ pra confirmar que o estado atual ainda passa, só então seguir pro próximo ite
 - [x] README final: diagrama de lineage (dbt gera automaticamente), seção "por que dbt em vez de só SQL cru", comparação com o `olist-etl-powerbi` (mesma origem de dados, abordagem diferente: Python imperativo vs. SQL declarativo)
 - [x] `dim_date` sem teste de unicidade/relationship: adicionar `unique`/`not_null` em `date_key` e cobrir os campos derivados (ano, mês, trimestre) com `accepted_values` onde fizer sentido
 - [x] Mart de granularidade mensal (`fct_monthly_revenue` ou semelhante) agregando `fct_orders` por `dim_date`, pra não repetir o group by das `analyses/` em todo lugar que precisar do número
-- [ ] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [x] Teste de freshness/volume nos seeds (ex.: `dbt_utils.recency` ou um teste simples de contagem mínima de linhas por seed) pra pegar regressão caso o gerador sintético mude
+- [ ] `source_status`/freshness real numa fonte com timestamp de carga (ex.: adicionar `_loaded_at` nos seeds e usar `dbt source freshness`), já que o teste de volume não cobre atraso de carga
+- [ ] Exemplo de model com `materialized='ephemeral'` nas intermediate (hoje staging é só view e marts são table/incremental; falta mostrar o terceiro tipo)
 

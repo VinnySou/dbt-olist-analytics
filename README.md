@@ -20,9 +20,10 @@ para o que já foi feito e o que vem a seguir.**
   `dim_date`, `fct_order_items`, `fct_orders`), com lógica de negócio
   documentada em cada model (ex.: classificação de porte de produto, cálculo
   de atraso de entrega vs. estimativa).
-- **Qualidade de dados como código**: 69 testes automatizados (genéricos —
-  `not_null`, `unique`, `relationships` — e de negócio, como "nenhum pedido
-  com valor negativo" ou "soma dos itens bate com o pagamento"), rodando a
+- **Qualidade de dados como código**: 89 testes automatizados (genéricos —
+  `not_null`, `unique`, `relationships` — de negócio, como "nenhum pedido
+  com valor negativo" ou "soma dos itens bate com o pagamento" — e de volume
+  mínimo nos seeds, pra pegar regressão no gerador sintético), rodando a
   cada push.
 - **Histórico de mudanças (SCD2)**: `snapshot_orders_status` rastreia, via
   `dbt snapshot`, cada mudança de status de um pedido (`order_status`,
@@ -142,6 +143,7 @@ diferentes de transformação de dados:
 seeds/                dados sintéticos (schema do dataset real da Olist)
 models/staging/        um model por seed: renomeia colunas, tipa, limpa
 models/marts/           dimensões e fatos prontos para consumo (esquema estrela)
+macros/                  testes genéricos reutilizáveis (ex.: minimum_row_count)
 scripts/                gerador dos seeds sintéticos
 tests/                   testes de negócio (singular tests)
 analyses/                consultas de negócio versionadas (receita mensal, curva ABC, atraso por estado)
@@ -190,9 +192,10 @@ SQL models with dbt's built-in testing and documentation. Work in progress, see
 [`ROADMAP.md`](ROADMAP.md) for current status.
 
 **What this demonstrates:** dimensional modeling (staging views → star-schema
-marts), 65 automated data-quality tests (generic + business rules), CI/CD via
-GitHub Actions (build + docs publishing on every push), reproducible synthetic
-data generation, and versioned business analyses (SQL) alongside the models.
+marts), 89 automated data-quality tests (generic + business rules + minimum
+row-count checks on the seeds), CI/CD via GitHub Actions (build + docs
+publishing on every push), reproducible synthetic data generation, and
+versioned business analyses (SQL) alongside the models.
 
 ```bash
 pip install -r requirements.txt

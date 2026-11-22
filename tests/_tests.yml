@@ -22,3 +22,9 @@ data_tests:
       A soma de revenue em fct_monthly_revenue (agregado por mês) deve bater com
       a soma de payment_value dos pedidos delivered em fct_orders (tolerância de
       1 centavo). Falha se houver divergência acima da tolerância.
+
+  - name: assert_order_status_distribution_not_empty
+    description: >
+      Cada status esperado de order_status (delivered, shipped, canceled) deve
+      ter pelo menos 1 pedido em fct_orders. Falha se o gerador sintético parar
+      de produzir algum desses status (regressão no mix gerado pelo seed).

@@ -22,3 +22,11 @@ data_tests:
       A soma de revenue em fct_monthly_revenue (agregado por mês) deve bater com
       a soma de payment_value dos pedidos delivered em fct_orders (tolerância de
       1 centavo). Falha se houver divergência acima da tolerância.
+
+  - name: assert_order_status_mix_not_empty
+    description: >
+      Cada status esperado de order_status (delivered, shipped, canceled) deve
+      ter pelo menos uma linha em fct_orders. Complementa o accepted_values da
+      coluna: accepted_values não pega um status que zerou completamente na
+      amostra, só um valor fora da lista. Falha se algum dos três sumir da
+      amostra gerada pelo seed sintético.

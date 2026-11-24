@@ -124,6 +124,9 @@ models:
         description: Status do pedido (delivered, shipped, canceled).
         tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: "{{ var('expected_order_statuses') }}"
       - name: order_purchase_date_key
         description: Data de compra do pedido no formato YYYYMMDD, FK para `dim_date.date_key`.
         tests:

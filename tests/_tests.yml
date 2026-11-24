@@ -22,3 +22,10 @@ data_tests:
       A soma de revenue em fct_monthly_revenue (agregado por mês) deve bater com
       a soma de payment_value dos pedidos delivered em fct_orders (tolerância de
       1 centavo). Falha se houver divergência acima da tolerância.
+
+  - name: assert_order_status_mix_is_complete
+    description: >
+      Cada status em var('expected_order_statuses') deve ter pelo menos um pedido
+      em fct_orders. Complementa o accepted_values de order_status: pega regressão
+      caso o gerador sintético (scripts/generate_seed_data.py) pare de gerar algum
+      dos status esperados.

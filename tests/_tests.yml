@@ -22,3 +22,10 @@ data_tests:
       A soma de revenue em fct_monthly_revenue (agregado por mês) deve bater com
       a soma de payment_value dos pedidos delivered em fct_orders (tolerância de
       1 centavo). Falha se houver divergência acima da tolerância.
+
+  - name: assert_all_order_statuses_present
+    description: >
+      Cada status esperado de pedido (delivered, shipped, canceled) deve ter pelo
+      menos uma linha em fct_orders. Complementa o accepted_values de order_status:
+      pega regressão caso o gerador sintético pare de sortear algum desses status,
+      zerando a contagem sem gerar nenhum valor fora do accepted_values.

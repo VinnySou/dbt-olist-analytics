@@ -124,6 +124,12 @@ models:
         description: Status do pedido (delivered, shipped, canceled).
         tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
+          - at_least_one_row_per_value:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled']
       - name: order_purchase_date_key
         description: Data de compra do pedido no formato YYYYMMDD, FK para `dim_date.date_key`.
         tests:

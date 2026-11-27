@@ -16,7 +16,7 @@ orders_total as (
 select
     monthly_total.total_revenue as monthly_revenue_total,
     orders_total.total_revenue as orders_revenue_total,
-    abs(monthly_total.total_revenue - orders_total.total_revenue) as difference
+    {{ monetary_diff('monthly_total.total_revenue', 'orders_total.total_revenue') }} as difference
 from monthly_total
 cross join orders_total
-where abs(monthly_total.total_revenue - orders_total.total_revenue) > 0.01
+where {{ exceeds_monetary_tolerance('monthly_total.total_revenue', 'orders_total.total_revenue') }}

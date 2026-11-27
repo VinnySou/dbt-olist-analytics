@@ -15,7 +15,7 @@ select
     fct_orders.order_id,
     fct_orders.payment_value,
     items_total.items_total_value,
-    abs(fct_orders.payment_value - items_total.items_total_value) as difference
+    {{ monetary_diff('fct_orders.payment_value', 'items_total.items_total_value') }} as difference
 from {{ ref('fct_orders') }}
 inner join items_total on fct_orders.order_id = items_total.order_id
-where abs(fct_orders.payment_value - items_total.items_total_value) > 0.01
+where {{ exceeds_monetary_tolerance('fct_orders.payment_value', 'items_total.items_total_value') }}

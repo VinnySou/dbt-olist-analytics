@@ -1,5 +1,6 @@
 -- A soma de revenue em fct_monthly_revenue deve bater com a soma de payment_value
--- dos pedidos delivered em fct_orders (mesmo total, só que agregado por mês).
+-- dos pedidos delivered em fct_orders (mesmo total, só que agregado por mês),
+-- com a mesma tolerância de 1 centavo (macro monetary_values_differ).
 -- Retorna uma linha quando esse invariante é violado (teste falha se houver alguma linha).
 
 with monthly_total as (
@@ -19,4 +20,4 @@ select
     abs(monthly_total.total_revenue - orders_total.total_revenue) as difference
 from monthly_total
 cross join orders_total
-where abs(monthly_total.total_revenue - orders_total.total_revenue) > 0.01
+where {{ monetary_values_differ('monthly_total.total_revenue', 'orders_total.total_revenue') }}

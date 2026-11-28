@@ -1,6 +1,6 @@
 -- A soma de (price + freight_value) dos itens de um pedido deve bater com o
 -- payment_value agregado em fct_orders. Tolerância de 1 centavo para
--- diferenças de arredondamento entre os dois cálculos.
+-- diferenças de arredondamento entre os dois cálculos (macro monetary_values_differ).
 -- Retorna linhas quando esse invariante é violado (teste falha se houver alguma linha).
 
 with items_total as (
@@ -18,4 +18,4 @@ select
     abs(fct_orders.payment_value - items_total.items_total_value) as difference
 from {{ ref('fct_orders') }}
 inner join items_total on fct_orders.order_id = items_total.order_id
-where abs(fct_orders.payment_value - items_total.items_total_value) > 0.01
+where {{ monetary_values_differ('fct_orders.payment_value', 'items_total.items_total_value') }}
